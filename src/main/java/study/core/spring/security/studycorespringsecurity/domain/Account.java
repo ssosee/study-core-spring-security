@@ -30,10 +30,6 @@ public class Account {
         account.password = dto.getPassword();
         account.email = dto.getEmail();
         account.age = dto.getAge();
-        if(!StringUtils.hasText(dto.getRole())) {
-            account.role = USER;
-            return account;
-        }
         account.role = dto.getRole();
 
         return account;

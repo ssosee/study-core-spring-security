@@ -1,9 +1,10 @@
-package study.core.spring.security.studycorespringsecurity.controller;
+package study.core.spring.security.studycorespringsecurity.controller.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import study.core.spring.security.studycorespringsecurity.domain.AccountDto;
 import study.core.spring.security.studycorespringsecurity.service.UserService;
 
