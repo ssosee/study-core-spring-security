@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import study.core.spring.security.studycorespringsecurity.sercurity.common.FormWebAuthenticationDetails;
 import study.core.spring.security.studycorespringsecurity.sercurity.service.AccountContext;
+import study.core.spring.security.studycorespringsecurity.sercurity.token.AjaxAuthenticationToken;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class FormAuthenticationProvider implements AuthenticationProvider {
-
+public class AjaxAuthenticationProvider implements AuthenticationProvider {
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
 
@@ -41,21 +41,14 @@ public class FormAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("암호를 확인해주세요.");
         }
 
-        FormWebAuthenticationDetails formWebAuthenticationDetails = (FormWebAuthenticationDetails) authentication.getDetails();
-        String secretKey = formWebAuthenticationDetails.getSecretKey();
-        if(secretKey == null || !"secret".equals(secretKey)) {
-            log.error("[InsufficientAuthenticationException]");
-            throw new InsufficientAuthenticationException("시크릿키를 확인해주세요.");
-        }
+        AjaxAuthenticationToken ajaxAuthenticationToken =
+                new AjaxAuthenticationToken(accountContext.getAccount(), null, accountContext.getAuthorities());
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(accountContext.getAccount(), null, accountContext.getAuthorities());
-
-        return authenticationToken;
+        return ajaxAuthenticationToken;
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+        return AjaxAuthenticationToken.class.isAssignableFrom(authentication);
     }
 }

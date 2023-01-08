@@ -1,5 +1,6 @@
 package study.core.spring.security.studycorespringsecurity.domain;
 
+import lombok.Builder;
 import lombok.Data;
 import study.core.spring.security.studycorespringsecurity.constant.validation.AccountDtoValidation;
 
@@ -18,4 +19,16 @@ public class AccountDto {
     @NotBlank(message = validAge)
     private String age;
     private String role;
+
+    public AccountDto() {
+    }
+
+    @Builder
+    public AccountDto(String username, String password, String email, String age, String role) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.age = age;
+        this.role = role;
+    }
 }

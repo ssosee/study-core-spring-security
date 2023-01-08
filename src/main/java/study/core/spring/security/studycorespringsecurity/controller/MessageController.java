@@ -1,13 +1,18 @@
 package study.core.spring.security.studycorespringsecurity.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class MessageController {
-    @GetMapping("/messages")
-    public String mypage() {
+    @GetMapping({"/messages", "/api/message"})
+    public String message() {
         return "user/messages";
+    }
+
+    @ResponseBody
+    @GetMapping("/api/message")
+    public String apiMessage() {
+        return "messages ok";
     }
 }

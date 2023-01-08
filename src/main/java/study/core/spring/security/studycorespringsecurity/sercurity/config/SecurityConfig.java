@@ -2,7 +2,10 @@ package study.core.spring.security.studycorespringsecurity.sercurity.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,9 +14,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import study.core.spring.security.studycorespringsecurity.sercurity.filter.AjaxLoginProcessingFilter;
+import study.core.spring.security.studycorespringsecurity.sercurity.handler.CustomAccessDeniedHandler;
+import study.core.spring.security.studycorespringsecurity.sercurity.handler.CustomAuthenticationFailureHandler;
+import study.core.spring.security.studycorespringsecurity.sercurity.handler.CustomAuthenticationSuccessHandler;
+import study.core.spring.security.studycorespringsecurity.sercurity.provider.FormAuthenticationProvider;
 
+@Order(1)
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -23,14 +34,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public static final String ADMIN = "ADMIN";
 
     private final UserDetailsService userDetailsService;
-    private final AuthenticationProvider authenticationProvider;
+    private final FormAuthenticationProvider formAuthenticationProvider;
     private final AuthenticationDetailsSource authenticationDetailsSource;
-    private final AuthenticationSuccessHandler authenticationSuccessHandler;
-    private final AuthenticationFailureHandler authenticationFailureHandler;
-    private final AccessDeniedHandler accessDeniedHandler;
+    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
 
     /**
-     * 메모리방식으로 권한 설정
+     * 권한 설정
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -44,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // DB 사용 방식
 //        auth.userDetailsService(customUserDetailsService);
 
-        auth.authenticationProvider(authenticationProvider);
+        auth.authenticationProvider(formAuthenticationProvider);
 
     }
 
@@ -73,12 +85,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login_proc") // 로그인 form action url
                 .defaultSuccessUrl("/")
                 .authenticationDetailsSource(authenticationDetailsSource)
-                .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler)
+                .successHandler(customAuthenticationSuccessHandler)
+                .failureHandler(customAuthenticationFailureHandler)
                 .permitAll();
 
         http
                 .exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler);
+                .accessDeniedHandler(customAccessDeniedHandler);
     }
 }
