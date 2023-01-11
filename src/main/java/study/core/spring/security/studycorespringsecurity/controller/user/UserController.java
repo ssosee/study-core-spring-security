@@ -5,7 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import study.core.spring.security.studycorespringsecurity.domain.AccountDto;
+import study.core.spring.security.studycorespringsecurity.domain.dto.AccountDto;
+import study.core.spring.security.studycorespringsecurity.domain.entity.Account;
 import study.core.spring.security.studycorespringsecurity.service.UserService;
 
 import javax.validation.Valid;
@@ -27,9 +28,9 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public String createUser(@Valid @ModelAttribute AccountDto dto) {
+    public String createUser(@Valid @ModelAttribute Account account) {
 
-        userService.createUser(dto);
+        userService.createUser(account);
 
         return "redirect:/";
     }
