@@ -6,7 +6,7 @@ import study.core.spring.security.studycorespringsecurity.domain.entity.Account;
 import java.util.List;
 
 public interface UserService {
-    void createUser(Account account);
+    void createUser(AccountDto dto);
     void modifyUser(AccountDto dto);
     List<Account> getUsers();
     AccountDto getUser(Long id);

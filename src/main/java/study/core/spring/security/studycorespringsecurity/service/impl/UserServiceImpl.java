@@ -31,15 +31,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void createUser(Account account) {
+    public void createUser(AccountDto dto) {
         // 암호화
-        String encodePassword = passwordEncoder.encode(account.getPassword());
-        account.changePassword(encodePassword);
+        String encodePassword = passwordEncoder.encode(dto.getPassword());
+        dto.setPassword(encodePassword);
 
         // 권한 부여
         Optional<Role> optionalRole = roleRepository.findByRoleName("ROLE_USER");
         Role role = optionalRole.orElseThrow(() -> new IllegalStateException("Role이 없습니다."));
-        account.changeUserRoles(new HashSet<>(Set.of(role)));
+
+        Account account = Account.createAccount(dto, role);
 
         userRepository.save(account);
     }

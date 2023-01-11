@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Account {
     @Id
@@ -29,13 +29,14 @@ public class Account {
             @JoinColumn(name = "role_id")})
     private Set<Role> userRoles = new HashSet<>();
 
-    public static Account createAccount(AccountDto dto) {
+    public static Account createAccount(AccountDto dto, Role role) {
         Account account = new Account();
 
         account.username = dto.getUsername();
         account.password = dto.getPassword();
         account.email = dto.getEmail();
         account.age = dto.getAge();
+        account.userRoles.add(role);
 
         return account;
     }

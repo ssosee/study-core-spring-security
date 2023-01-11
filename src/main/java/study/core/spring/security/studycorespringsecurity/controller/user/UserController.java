@@ -28,9 +28,9 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public String createUser(@Valid @ModelAttribute Account account) {
+    public String createUser(@Valid @ModelAttribute AccountDto dto) {
 
-        userService.createUser(account);
+        userService.createUser(dto);
 
         return "redirect:/";
     }
