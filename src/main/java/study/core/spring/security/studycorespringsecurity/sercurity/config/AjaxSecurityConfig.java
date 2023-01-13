@@ -17,7 +17,7 @@ import study.core.spring.security.studycorespringsecurity.sercurity.handler.Ajax
 import study.core.spring.security.studycorespringsecurity.sercurity.handler.AjaxAuthenticationSuccessHandler;
 import study.core.spring.security.studycorespringsecurity.sercurity.provider.AjaxAuthenticationProvider;
 
-@Order(0)
+@Order(1)
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {

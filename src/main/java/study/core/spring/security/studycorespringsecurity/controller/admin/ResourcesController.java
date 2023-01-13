@@ -26,8 +26,9 @@ public class ResourcesController {
     private final ResourcesService resourcesService;
     private final RoleService roleService;
     private final RoleRepository roleRepository;
-    private final UrlFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource;
     private final ModelMapper modelMapper;
+    private final UrlFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource;
+
 
     @GetMapping(value="/admin/resources")
     public String getResources(Model model) throws Exception {
@@ -48,6 +49,7 @@ public class ResourcesController {
         resources.changeRoleSet(roles);
 
         resourcesService.createResources(resources);
+        filterInvocationSecurityMetadataSource.reload();
 
         return "redirect:/admin/resources";
     }
@@ -85,6 +87,7 @@ public class ResourcesController {
 
         Resources resources = resourcesService.getResources(Long.valueOf(id));
         resourcesService.deleteResources(Long.valueOf(id));
+        filterInvocationSecurityMetadataSource.reload();
 
         return "redirect:/admin/resources";
     }

@@ -38,30 +38,29 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
 
         setupSecurityResources();
-
-        // setupAccessIpData();
+        setupAccessIpData();
 
         alreadySetup = true;
     }
 
     private void setupSecurityResources() {
 
-        Set<Role> roles = new HashSet<>();
-        Role adminRole = createRoleIfNotFound("ROLE_ADMIN", "관리자");
-        roles.add(adminRole);
-        createResourceIfNotFound("/admin/**", "", roles, "url");
-        Account account = createUserIfNotFound("admin", "admin@gmail.com", "123", 10,  roles);
-
 //        Set<Role> roles = new HashSet<>();
 //        Role adminRole = createRoleIfNotFound("ROLE_ADMIN", "관리자");
 //        roles.add(adminRole);
 //        createResourceIfNotFound("/admin/**", "", roles, "url");
-//        createResourceIfNotFound("execution(public * io.security.corespringsecurity.aopsecurity.*Service.pointcut*(..))", "", roles, "pointcut");
-//        createUserIfNotFound("admin", "admin@admin.com", "pass", roles);
-//        Role managerRole = createRoleIfNotFound("ROLE_MANAGER", "매니저권한");
-//        Role userRole = createRoleIfNotFound("ROLE_USER", "사용자권한");
-//        createRoleHierarchyIfNotFound(managerRole, adminRole);
-//        createRoleHierarchyIfNotFound(userRole, managerRole);
+//        Account account = createUserIfNotFound("admin", "admin@gmail.com", "123", 10,  roles);
+
+        Set<Role> roles = new HashSet<>();
+        Role adminRole = createRoleIfNotFound("ROLE_ADMIN", "관리자");
+        roles.add(adminRole);
+        createResourceIfNotFound("/admin/**", "", roles, "url");
+        createResourceIfNotFound("execution(public * io.security.corespringsecurity.aopsecurity.*Service.pointcut*(..))", "", roles, "pointcut");
+        createUserIfNotFound("admin", "admin@admin.com", "123", 10, roles);
+        Role managerRole = createRoleIfNotFound("ROLE_MANAGER", "매니저권한");
+        Role userRole = createRoleIfNotFound("ROLE_USER", "사용자권한");
+        createRoleHierarchyIfNotFound(managerRole, adminRole);
+        createRoleHierarchyIfNotFound(userRole, managerRole);
     }
 
     @Transactional
@@ -120,34 +119,29 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
+    public RoleHierarchy findRoleHierarchyIfNotFound(Role role) {
+
+        Optional<RoleHierarchy> optionalRoleHierarchyByParentRole = roleHierarchyRepository.findByChildName(role.getRoleName());
+        if (optionalRoleHierarchyByParentRole.isEmpty()) {
+            RoleHierarchy roleHierarchy = RoleHierarchy.builder()
+                    .childName(role.getRoleName())
+                    .build();
+            return roleHierarchyRepository.save(roleHierarchy);
+        }
+
+        return optionalRoleHierarchyByParentRole.get();
+    }
+
     public void createRoleHierarchyIfNotFound(Role childRole, Role parentRole) {
-
-        RoleHierarchy roleHierarchy = roleHierarchyRepository.findByChildName(parentRole.getRoleName())
-                .orElseThrow(() -> new IllegalStateException("RoleHierarchy가 없습니다."));
-        if (roleHierarchy == null) {
-            roleHierarchy = RoleHierarchy.builder()
-                    .childName(parentRole.getRoleName())
-                    .build();
-        }
-        RoleHierarchy parentRoleHierarchy = roleHierarchyRepository.save(roleHierarchy);
-
-        roleHierarchy = roleHierarchyRepository.findByChildName(childRole.getRoleName())
-                .orElseThrow(() -> new IllegalStateException("RoleHierarchy가 없습니다."));
-        if (roleHierarchy == null) {
-            roleHierarchy = RoleHierarchy.builder()
-                    .childName(childRole.getRoleName())
-                    .build();
-        }
-
-        RoleHierarchy childRoleHierarchy = roleHierarchyRepository.save(roleHierarchy);
-        childRoleHierarchy.changeParentName(parentRoleHierarchy);
+        RoleHierarchy rhc = findRoleHierarchyIfNotFound(childRole);
+        RoleHierarchy rhp = findRoleHierarchyIfNotFound(parentRole);
+        rhc.changeParentName(rhp);
     }
 
     private void setupAccessIpData() {
 
-        AccessIp byIpAddress = accessIpRepository.findByIpAddress("0:0:0:0:0:0:0:1")
-                .orElseThrow(IllegalStateException::new);
-        if (byIpAddress == null) {
+        Optional<AccessIp> optionalAccessIp = accessIpRepository.findByIpAddress("0:0:0:0:0:0:0:1");
+        if (optionalAccessIp.isEmpty()) {
             AccessIp accessIp = AccessIp.builder()
                     .ipAddress("0:0:0:0:0:0:0:1")
                     .build();

@@ -33,6 +33,10 @@ public class RoleHierarchyServiceImpl implements RoleHierarchyService {
                 sb.append("\n");
             }
         }
+        /**
+         * 아래와 같은 문자열이 되도록
+         * ROLE_ADMIN > ROLE_MANAGER\nROLE_MANAGER > ROLE_USER\n
+         */
         return sb.toString();
     }
 }
